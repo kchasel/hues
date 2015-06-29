@@ -7,11 +7,18 @@ import org.joda.time.DateTimeUtils
 
 import scala.math._
 
-class Clock(val latitude: Double, val longitude: Double, val julianDate: Double = Clock.julianDate()) {
+// latitude in fractional degrees, N = +
+// lng in fractional degrees, E = +
+// julianDate of
+class SolarClock(val latitude: Double, lng: Double, val julianDate: Long = SolarClock.currentJulianDate()) {
+  // reverse passed lng since these equations are based upon longitude W = +
+  val longitude: Double = -lng
 
-  def sunrise = solarTransit - hourAngle / 360
+  def sunrise: Double = solarTransit - hourAngle / 360
 
-  def sunset = solarTransit + hourAngle / 360
+  def sunset: Double = solarTransit + hourAngle / 360
+
+  // Calculations follow
 
   lazy val hourAngle: Double = toDegrees(acos(
     (sinOfDeg(-0.83) - sinOfDeg(latitude)*sinOfDeg(declination))/(cosOfDeg(latitude)*cosOfDeg(declination))
@@ -21,11 +28,11 @@ class Clock(val latitude: Double, val longitude: Double, val julianDate: Double 
   val cosOfDeg = (deg: Double) => cos(toRadians(deg))
 
   val n = {
-    val nStar = { julianDate - Clock.julian2000 - (longitude/360) }
+    val nStar = { julianDate - SolarClock.julian2000 - (longitude/360) }
     round(nStar + .5)
   }
 
-  val approxNoon: Double =  Clock.julian2000 + (longitude/360) + n
+  val approxNoon: Double =  SolarClock.julian2000 + (longitude/360) + n
 
   val meanAnomaly: Double = (357.5291 + 0.98560028 * (approxNoon - 2451545)) % 360
 
@@ -39,11 +46,11 @@ class Clock(val latitude: Double, val longitude: Double, val julianDate: Double 
 
 }
 
-object Clock {
+object SolarClock {
   val julian2000 = 2451545.0009
 
-  def julianDate(start: Date = new Date()): Double =
-    floor(DateTimeUtils.toJulianDay(start.getTime))
+  def currentJulianDate(start: Date = new Date()): Long =
+    floor(DateTimeUtils.toJulianDay(start.getTime)).toLong
 
   def julianToDate(jul: Double): Date = {
     new Date(DateTimeUtils.fromJulianDay(jul))
