@@ -9,11 +9,13 @@ object Main {
       override def run = { println("MADE IT HERE"); keepRunning = false; mainThread.join() }
     })
 
-    Runner.beginTimer
+    val runner = new Runner(args.lift(0).map(_.toDouble), args.lift(1).map(_.toDouble))
+
+    runner.start
 
     while(keepRunning) { }
 
-    Runner.timer.cancel
+    //runner.timer.cancel
     //Network.disconnect or whatever
     //Shutdown procedure? (turn off lights, leave at current, back to setting?)
     println("Nighty night")

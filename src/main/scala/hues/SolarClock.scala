@@ -14,9 +14,11 @@ class SolarClock(val latitude: Double, lng: Double, val julianDate: Long = Solar
   // reverse passed lng since these equations are based upon longitude W = +
   val longitude: Double = -lng
 
-  def sunrise: Double = solarTransit - hourAngle / 360
+  lazy val sunrise: Double = solarTransit - hourAngle / 360
 
-  def sunset: Double = solarTransit + hourAngle / 360
+  lazy val sunset: Double = solarTransit + hourAngle / 360
+
+  lazy val hoursOfSun: Double = (sunset - sunrise) * 24
 
   // Calculations follow
 
@@ -40,10 +42,9 @@ class SolarClock(val latitude: Double, lng: Double, val julianDate: Long = Solar
 
   val eclipLongitude: Double = (meanAnomaly + 102.9372 + center + 180) % 360
 
-  lazy val solarTransit: Double = approxNoon + 0.0053*sinOfDeg(meanAnomaly) - 0.0069*sinOfDeg(2*eclipLongitude)
+  val solarTransit: Double = approxNoon + 0.0053*sinOfDeg(meanAnomaly) - 0.0069*sinOfDeg(2*eclipLongitude)
 
   val declination: Double = toDegrees(asin(sinOfDeg(eclipLongitude)*sinOfDeg(23.45)))
-
 }
 
 object SolarClock {
