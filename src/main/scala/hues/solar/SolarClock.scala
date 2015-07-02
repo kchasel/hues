@@ -1,4 +1,4 @@
-package hues
+package hues.solar
 
 import java.util._
 import java.util.concurrent.TimeUnit

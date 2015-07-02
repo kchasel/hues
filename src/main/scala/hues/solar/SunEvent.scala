@@ -1,4 +1,4 @@
-package hues
+package hues.solar
 
 import java.util.{Date, Timer, Calendar}
 
