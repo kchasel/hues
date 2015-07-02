@@ -11,18 +11,24 @@ abstract class SunEvent(lat: Double, lng: Double, on: Long = SolarClock.currentJ
 
   def triggerTime: Double
 
-  println(s"ENQUEEING $this AT ${SolarClock.julianToDate(triggerTime)}")
-  Sun.timer.schedule(new java.util.TimerTask() {
-    override def run: Unit = {
-      trigger()
-    }
-  }, cal.getTime)
-  //}, SolarClock.julianToDate(triggerTime))
+  def enqueue() = {
+    println(s"ENQUEEING $this AT ${SolarClock.julianToDate(triggerTime)}")
+    Sun.timer.schedule(new java.util.TimerTask() {
+      override def run: Unit = {
+        trigger()
+      }
+    }, cal.getTime)
+    //}, SolarClock.julianToDate(triggerTime))
+  }
 
   def trigger() = {
     println(s"EVENT TRIGGERED: ${this}")
     Sun.prepareNext(this)
   }
+
+  def cancel() = Sun.timer.cancel
+
+  enqueue()
 }
 
 object Sun {
