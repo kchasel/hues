@@ -4,7 +4,7 @@ import solar.Sunrise
 
 class Runner(latitude: Option[Double], longitude: Option[Double]) {
   def start = {
-    new Sunrise(latitude.getOrElse(Runner.NYC._1), longitude.getOrElse(Runner.NYC._2))
+    (new Sunrise(latitude.getOrElse(Runner.NYC._1), longitude.getOrElse(Runner.NYC._2))).enqueue()
   }
 }
 

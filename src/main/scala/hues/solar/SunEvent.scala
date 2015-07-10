@@ -9,26 +9,24 @@ abstract class SunEvent(lat: Double, lng: Double, on: Long = SolarClock.currentJ
 
   cal.add(Calendar.MINUTE, 1)
 
-  def triggerTime: Double
+  val triggerTime: Double
 
-  def enqueue() = {
+  def enqueue(): Unit = {
     println(s"ENQUEEING $this AT ${SolarClock.julianToDate(triggerTime)}")
     Sun.timer.schedule(new java.util.TimerTask() {
       override def run: Unit = {
         trigger()
       }
-    }, cal.getTime)
-    //}, SolarClock.julianToDate(triggerTime))
+    }, SolarClock.julianToDate(triggerTime))
   }
 
   def trigger() = {
     println(s"EVENT TRIGGERED: ${this}")
-    Sun.prepareNext(this)
+    val next = Sun.prepareNext(this)
+    next.enqueue
   }
 
   def cancel() = Sun.timer.cancel
-
-  enqueue()
 }
 
 object Sun {
@@ -42,9 +40,9 @@ object Sun {
 }
 
 case class Sunrise(lat: Double, lng: Double, on: Long = SolarClock.currentJulianDate()) extends SunEvent(lat, lng, on) {
-  lazy val triggerTime = solarClock.sunrise
+  val triggerTime = solarClock.sunrise
 }
 
 case class Sunset(lat: Double, lng: Double, on: Long = SolarClock.currentJulianDate()) extends SunEvent(lat, lng, on) {
-  lazy val triggerTime = solarClock.sunset - Sun.periodInDays
+  val triggerTime = solarClock.sunset - Sun.periodInDays
 }
